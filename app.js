@@ -14,11 +14,6 @@ const tileWidth = 80; // Width of a single tile in the isometric grid
 const tileHeight = 30; // Height of a single tile in the isometric grid
 const cellSize = 80; // Assuming each asset is 64x64 pixels
 
-let offsetX = 0; // For dragging the canvas
-let offsetY = 0; // For dragging the canvas
-let dragging = false;
-let dragStartX, dragStartY;
-
 const protectedZoneSize = 3; // Define the size of the protected zone around the crater
 
 const densityFactor = 0.4; // % of the grid cells will be filled with assets
@@ -26,21 +21,19 @@ const densityFactor = 0.4; // % of the grid cells will be filled with assets
 // Offscreen canvas
 let offscreenCanvas, offscreenContext;
 
-function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight);
-    canvas.parent('canvasContainer');
-    document.getElementById('generateButton').addEventListener('click', () => {
-        showLoadingScreen();
-        setTimeout(() => {
-            generateWasteland();
-            hideLoadingScreen();
-        }, 300); // Fake loading duration in milliseconds
+// Detect if the device is mobile
+const isMobile = window.matchMedia("only screen and (max-width: 600px)").matches;
+
+function preload() {
+    assets = [
+        { type: 'building', image: loadImage('assets/buildings/building1.png'), size: 1, rarity: 5 },
+        { type: 'building', image: loadImage('assets/buildings/building2.png'), size: 1, rarity: 5 },
+        // Add more assets here...
+    ];
+
+    assets.forEach(asset => {
+        console.log(`Loaded asset ${asset.type} with size ${asset.size}`);
     });
-    canvas.mousePressed(startDrag);
-    canvas.mouseReleased(stopDrag);
-    offscreenCanvas = createGraphics(gridCols * tileWidth, gridRows * tileHeight);
-    offscreenContext = offscreenCanvas.elt.getContext('2d');
-    generateWasteland(); // Optional: generate initial wasteland on setup
 }
 
 function preload() {
@@ -157,6 +150,28 @@ function preload() {
     ];
 }
 
+
+function setup() {
+    let canvas = createCanvas(windowWidth, windowHeight);
+    canvas.parent('canvasContainer');
+    document.getElementById('generateButton').addEventListener('click', () => {
+        showLoadingScreen();
+        setTimeout(() => {
+            generateWasteland();
+            hideLoadingScreen();
+        }, 300); // Fake loading duration in milliseconds
+    });
+    offscreenCanvas = createGraphics(gridCols * tileWidth, gridRows * tileHeight);
+    offscreenContext = offscreenCanvas.elt.getContext('2d');
+    generateWasteland(); // Optional: generate initial wasteland on setup
+}
+
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+    generateWasteland(); // Re-generate the wasteland to fit the new size
+}
+
 const loadingMessages = [
     'NUKING THE CITY',
     'DISCOVERING NEW WASTELAND',
@@ -207,6 +222,7 @@ function generateWasteland() {
                 if (availableAssets.length > 0) {
                     let asset = getRandomAsset(availableAssets);
                     placeAsset(asset, row, col);
+                    console.log(`Placed asset ${asset.type} at (${row}, ${col})`); // Debug log
                     placedAssets++;
                 }
             }
@@ -215,8 +231,6 @@ function generateWasteland() {
         hideLoadingScreen();
     }, randomDelay);
 }
-
-
 
 function getRandomAsset(availableAssets) {
     if (availableAssets.length === 0) {
@@ -280,7 +294,6 @@ function canPlaceAsset(asset, row, col) {
     return true;
 }
 
-
 function placeAsset(asset, startRow, startCol) {
     for (let row = startRow; row < startRow + asset.size; row++) {
         for (let col = startCol; col < startCol + asset.size; col++) {
@@ -293,20 +306,22 @@ function placeAsset(asset, startRow, startCol) {
 }
 
 function draw() {
-    background(200); // Sets the background to a light gray color
     clear();
-    translate(offsetX, offsetY);
-    image(offscreenCanvas, -offsetX, -offsetY, offscreenCanvas.width, offscreenCanvas.height);
-    checkMousePositionForScrolling();
+    if (isMobile) {
+        scale(0.5); // Scale down by 50% for mobile view
+        translate(width / 4, height / 4); // Adjust translation to center the scaled-down content
+    }
+    image(offscreenCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+    drawGrid(); // Draw the grid lines on top of the assets
 }
 
 function drawOffscreenCanvas() {
     offscreenCanvas.clear();
-    // First, draw the dead zone assets
+    // Draw all assets
     for (let row = 0; row < gridRows; row++) {
         for (let col = 0; col < gridCols; col++) {
             let asset = getAssetAt(row, col);
-            if (asset && !asset.part && asset.type === 'crater') {
+            if (asset && !asset.part) {
                 let img = asset.image;
                 let aspectRatio = img.width / img.height;
                 let drawWidth, drawHeight;
@@ -325,81 +340,37 @@ function drawOffscreenCanvas() {
                 let x = isoX + (tileWidth - drawWidth) / 2;
                 let y = isoY + (tileHeight - drawHeight) / 2;
 
-                offscreenCanvas.image(img, x, y, drawWidth, drawHeight);
-            }
-        }
-    }
+                // Debugging: Log asset drawing coordinates
+                console.log(`Drawing asset at (${x}, ${y}) with width ${drawWidth} and height ${drawHeight}`);
 
-    // Then, draw all other assets
-    for (let row = 0; row < gridRows; row++) {
-        for (let col = 0; col < gridCols; col++) {
-            let asset = getAssetAt(row, col);
-            if (asset && !asset.part && asset.type !== 'crater') {
-                let img = asset.image;
-                let aspectRatio = img.width / img.height;
-                let drawWidth, drawHeight;
-
-                if (aspectRatio > 1) {
-                    drawWidth = tileWidth * asset.size;
-                    drawHeight = (tileWidth * asset.size) / aspectRatio;
-                } else {
-                    drawWidth = (tileHeight * asset.size) * aspectRatio;
-                    drawHeight = tileHeight * asset.size;
+                // Ensure assets are within the visible area
+                if (x + drawWidth > 0 && y + drawHeight > 0 && x < offscreenCanvas.width && y < offscreenCanvas.height) {
+                    offscreenCanvas.image(img, x, y, drawWidth, drawHeight);
                 }
-
-                let isoX = (col - row) * (tileWidth / 2);
-                let isoY = (col + row) * (tileHeight / 2);
-
-                let x = isoX + (tileWidth - drawWidth) / 2;
-                let y = isoY + (tileHeight - drawHeight) / 2;
-
-                offscreenCanvas.image(img, x, y, drawWidth, drawHeight);
             }
         }
     }
 }
 
-function startDrag() {
-    dragging = true;
-    dragStartX = mouseX - offsetX;
-    dragStartY = mouseY - offsetY;
-}
+function drawGrid() {
+    stroke(200); // Light gray color for grid lines
+    for (let row = 0; row <= gridRows; row++) {
+        for (let col = 0; col <= gridCols; col++) {
+            let isoX = (col - row) * (tileWidth / 2);
+            let isoY = (col + row) * (tileHeight / 2);
 
-function stopDrag() {
-    dragging = false;
-}
+            // Vertical lines
+            line(isoX, isoY, isoX + tileWidth, isoY + tileHeight);
 
-function mouseDragged() {
-    if (dragging) {
-        offsetX = mouseX - dragStartX;
-        offsetY = mouseY - dragStartY;
-    }
-}
-
-let lastScrollCheck = 0;
-function checkMousePositionForScrolling() {
-    const edgeScrollMargin = 20; // Distance from edge to start scrolling
-    const scrollSpeed = 5; // Speed of scrolling
-
-    if (millis() - lastScrollCheck > 50) { // Throttling scroll check
-        if (mouseX < edgeScrollMargin) {
-            offsetX += scrollSpeed;
+            // Horizontal lines
+            line(isoX, isoY, isoX - tileWidth, isoY + tileHeight);
         }
-        if (mouseX > width - edgeScrollMargin) {
-            offsetX -= scrollSpeed;
-        }
-        if (mouseY < edgeScrollMargin) {
-            offsetY += scrollSpeed;
-        }
-        if (mouseY > height - edgeScrollMargin) {
-            offsetY -= scrollSpeed;
-        }
-        lastScrollCheck = millis();
     }
 }
 
 function getAssetAt(row, col) {
-    let wrappedRow = (row % gridRows + gridRows) % gridRows;
-    let wrappedCol = (col % gridCols + gridCols) % gridCols;
-    return grid[wrappedRow][wrappedCol];
+    if (row < 0 || row >= gridRows || col < 0 || col >= gridCols) {
+        return null;
+    }
+    return grid[row][col];
 }
