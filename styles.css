@@ -61,8 +61,8 @@ body, html {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(5px) grayscale(100%); /* Adjust blur radius and grayscale percentage */
+  background: rgba(0, 0, 0, 0.70);
+  backdrop-filter: blur(3px) grayscale(100%); /* Adjust blur radius and grayscale percentage */
   color: #fbca1f;
   display: flex;
   justify-content: center;
@@ -77,11 +77,13 @@ body, html {
   #generateButton {
     padding: 0.4em 0.8em;
     font-size: 24px;
-    top: 580px;
+    top: 590px;
     right: 20px;
   }
 
   #loadingScreen {
-    font-size: 2em;
+    text-align:center;
+    font-size: 20vw;
+    background: rgba(0, 0, 0, 0.80);
   }
 }
