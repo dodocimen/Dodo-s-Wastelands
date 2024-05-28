@@ -353,7 +353,7 @@ function drawOffscreenCanvas() {
 }
 
 function drawGrid() {
-    stroke(200); // Light gray color for grid lines
+    stroke(200,0); // Light gray color for grid lines
     for (let row = 0; row <= gridRows; row++) {
         for (let col = 0; col <= gridCols; col++) {
             let isoX = (col - row) * (tileWidth / 2);
