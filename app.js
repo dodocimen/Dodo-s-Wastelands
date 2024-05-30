@@ -54,15 +54,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
         { src: 'assets/music/heygringo.mp3', name: 'Hey Gringo - KALEO' },
         { src: 'assets/music/prettybug.mp3', name: 'Pretty Bug - Allan Rayman' },
         { src: 'assets/music/feelingyou.mp3', name: 'Feeling You - Harrison Storm' },
-        { src: 'assets/music/savemesomesunshine.mp3', name: 'Save Me Some Sunshine - Rafferty' },
-        { src: 'assets/music/elbuho.mp3', name: 'El Buho - Blanco White' },
+        { src: 'assets/music/hammersnnails.mp3', name: 'Hammers and Nails - The Bones of J.R. Jones' },
         { src: 'assets/music/brotherrunfast.mp3', name: 'Brother Run Fast - KALEO' },
         { src: 'assets/music/fistfight.mp3', name: 'Fist Fight - The Balroom Thieves' },
-        { src: 'assets/music/hammersnnails.mp3', name: 'Hammers and Nails - The Bones of J.R. Jones' },
+        { src: 'assets/music/savemesomesunshine.mp3', name: 'Save Me Some Sunshine - Rafferty' },
         { src: 'assets/music/herewego.mp3', name: 'Here We Go - Norman' },
         { src: 'assets/music/silverlining.mp3', name: 'Silver Lining - Mt. Joy' },
         { src: 'assets/music/sunsetswest.mp3', name: 'Sun Sets West - little hurricane' },
         { src: 'assets/music/tickethome.mp3', name: 'Ticket Home - The Bones of J.R. Jones' },
+        { src: 'assets/music/elbuho.mp3', name: 'El Buho - Blanco White' },
         { src: 'assets/music/wakingupwithoutyou.mp3', name: 'Waking Up Without You - Rhys Lewis' },
     ];
 

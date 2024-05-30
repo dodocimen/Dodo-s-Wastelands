@@ -255,9 +255,10 @@ html, body {
     font-size: 18px;
   }
   #skipButton {
-    bottom: 85px !important; /* Adjust this value to move the button lower */
-    right: 275px !important; /* Adjust the horizontal position */
+    bottom: 90px !important; /* Adjust this value to move the button lower */
+    right: 320px !important; /* Adjust the horizontal position */
     font-size: 9px; /* Customizable font size */
+    z-index: 998;
   }
 
   #skipButton:hover {
