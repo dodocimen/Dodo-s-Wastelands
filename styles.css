@@ -199,7 +199,7 @@ html, body {
   color: white; /* Ensure text color is set */
   transition: 0.1s ease; /* Smooth transition */
   font-size: 11px;
-  padding: .8em 1em;
+    padding: .6em 1em;
 }
 
 /* Container for song name */
@@ -262,12 +262,12 @@ html, body {
   }
 
   #skipButton:hover {
-    background-color: #41463d;
-    color: white; /* Ensure text color is set */
-    transition: 0.1s ease; /* Smooth transition */
-    font-size: 9px;
-    padding: 1em;
-  }
+  background-color: #41463d;
+  color: #e4d6a7; /* Ensure text color is set */
+  transition: 0.1s ease; /* Smooth transition */
+  font-size: 9px;
+  padding: .6em 1em;
+}
 
   /* Slide in from the right */
 @keyframes slideInRight {
