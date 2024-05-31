@@ -46,7 +46,7 @@ html, body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 200px; /* Adjust the width as needed */
+  width: 180px; /* Adjust the width as needed */
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
@@ -55,6 +55,23 @@ html, body {
   z-index: 1010; /* Ensure it is on top of other elements */
   padding: 10px;
   box-sizing: border-box;
+  font-family: ariel, sans-serif;
+  font-size:.8em;
+}
+
+.selection-window {
+  overflow-y: scroll;
+}
+
+.selection-window::-webkit-scrollbar-thumb {
+  background: #000; /* Black color for the scrollbar thumb */
+  border-radius: 10px;
+}
+
+/* For Firefox */
+.selection-window {
+  scrollbar-color: #000 #f1f1f1; /* thumb color and track color */
+  scrollbar-width: thick;
 }
 
 .selection-content {
