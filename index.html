@@ -16,18 +16,36 @@
     <div id="canvasContainer">
       <button id="generateButton">GENERATE WASTELANDS</button>
       <button id="toggleButton">DRAMATIZE</button>
-      <button
-        id="skipButton"
-        style="position: absolute; bottom: 150px; right: 30px; z-index: 1002"
-      >
-        Skip Song
+      <button id="editorModeButton">EDITOR MODE</button>
+      <button id="sledgehammerToolButton" style="display: none">
+        SLEDGEHAMMER
       </button>
+
+      <div id="warningMessage" class="warning-message">
+        Sledgehammer tool is active
+      </div>
+
+      <div id="selectionWindow" class="selection-window">
+        <div id="selectionContent" class="selection-content"></div>
+      </div>
+
+      <button id="skipButton">Skip Song</button>
       <div id="topBar" class="cinematic-bar"></div>
       <div id="bottomBar" class="cinematic-bar"></div>
       <img id="radio" src="assets/radio.svg" alt="Radio" />
       <div id="songNameContainer" class="songNameContainer">
         <span id="songName"></span>
       </div>
+      <audio
+        id="clickSound"
+        src="assets/music/click-sound.mp3"
+        preload="auto"
+      ></audio>
+      <audio
+        id="openingSound"
+        src="assets/music/opening-sound.mp3"
+        preload="auto"
+      ></audio>
     </div>
     <audio id="audioPlayer" controls style="display: none"></audio>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>

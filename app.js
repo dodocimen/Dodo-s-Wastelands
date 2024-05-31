@@ -7,13 +7,31 @@ const edgeCompatibility = {
 let placedLargeBuildings = new Set();
 let assets = [];
 let grid = [];
+let selectedAsset = null;
 let craterPosition = null;
 let condoComplexPosition = null;
+let isEditorMode = false;
+let isSledgehammerActive = false;
 const gridRows = 80; // Increased size for larger canvas
 const gridCols = 80; // Increased size for larger canvas
 
+const squareTileSize = 50; // Size of the square grid cells
 const tileWidth = 80; // Width of a single tile in the isometric grid
 const tileHeight = 30; // Height of a single tile in the isometric grid
+
+const initialEditorModeButtonStyle = {
+    position: document.getElementById('editorModeButton').style.position,
+    top: document.getElementById('editorModeButton').style.top,
+    right: document.getElementById('editorModeButton').style.right,
+    margin: document.getElementById('editorModeButton').style.margin,
+};
+
+const initialSledgehammerToolButtonStyle = {
+    position: document.getElementById('sledgehammerToolButton').style.position,
+    top: document.getElementById('sledgehammerToolButton').style.top,
+    right: document.getElementById('sledgehammerToolButton').style.right,
+    margin: document.getElementById('sledgehammerToolButton').style.margin,
+};
 
 const protectedZoneSize = 3; // Define the size of the protected zone around the crater
 
@@ -28,6 +46,7 @@ const isMobile = window.matchMedia("only screen and (max-width: 600px)").matches
 if (isMobile) {
     document.body.classList.add('mobile');
 }
+
 
 
 const mobileGridOffsetX = -30; // Customize these values as needed
@@ -52,16 +71,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // List of music files and their display names
     const musicList = [
         { src: 'assets/music/heygringo.mp3', name: 'Hey Gringo - KALEO' },
+        { src: 'assets/music/tickethome.mp3', name: 'Ticket Home - The Bones of J.R. Jones' },
         { src: 'assets/music/prettybug.mp3', name: 'Pretty Bug - Allan Rayman' },
+        { src: 'assets/music/herewego.mp3', name: 'Here We Go - Norman' },
         { src: 'assets/music/feelingyou.mp3', name: 'Feeling You - Harrison Storm' },
         { src: 'assets/music/hammersnnails.mp3', name: 'Hammers and Nails - The Bones of J.R. Jones' },
         { src: 'assets/music/brotherrunfast.mp3', name: 'Brother Run Fast - KALEO' },
         { src: 'assets/music/fistfight.mp3', name: 'Fist Fight - The Balroom Thieves' },
         { src: 'assets/music/savemesomesunshine.mp3', name: 'Save Me Some Sunshine - Rafferty' },
-        { src: 'assets/music/herewego.mp3', name: 'Here We Go - Norman' },
         { src: 'assets/music/silverlining.mp3', name: 'Silver Lining - Mt. Joy' },
         { src: 'assets/music/sunsetswest.mp3', name: 'Sun Sets West - little hurricane' },
-        { src: 'assets/music/tickethome.mp3', name: 'Ticket Home - The Bones of J.R. Jones' },
         { src: 'assets/music/elbuho.mp3', name: 'El Buho - Blanco White' },
         { src: 'assets/music/wakingupwithoutyou.mp3', name: 'Waking Up Without You - Rhys Lewis' },
     ];
@@ -137,7 +156,58 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
+//EDITOR MODE
+// Ensure no JavaScript is setting positions for these elements
+document.getElementById('editorModeButton').addEventListener('click', () => {
+    isEditorMode = !isEditorMode; // Toggle the editor mode status
+    const sledgehammerToolButton = document.getElementById('sledgehammerToolButton');
+    const selectionWindow = document.getElementById('selectionWindow');
+    const generateButton = document.getElementById('generateButton');
+    const toggleButton = document.getElementById('toggleButton');
+    const editorModeButton = document.getElementById('editorModeButton');
+    const skipButton = document.getElementById('skipButton');
 
+    if (isEditorMode) {
+        document.getElementById('editorModeButton').textContent = 'EXIT EDITOR MODE';
+        sledgehammerToolButton.style.display = 'block'; // Show the sledgehammer tool button
+        selectionWindow.style.display = 'block'; // Show the selection window
+        generateButton.style.display = 'none'; // Hide the generate button
+        toggleButton.style.display = 'none'; // Hide the toggle button
+
+        // No position setting here
+        document.body.classList.add('editor-mode-active');
+        populateSelectionWindow(); // Populate the selection window with assets
+    } else {
+        document.getElementById('editorModeButton').textContent = 'TOGGLE EDITOR MODE';
+        sledgehammerToolButton.style.display = 'none'; // Hide the sledgehammer tool button
+        selectionWindow.style.display = 'none'; // Hide the selection window
+        generateButton.style.display = 'block'; // Show the generate button
+        toggleButton.style.display = 'block'; // Show the toggle button
+
+        // No position resetting here
+        document.body.classList.remove('editor-mode-active');
+        selectedAsset = null; // Reset the selected asset
+        isSledgehammerActive = false; // Reset sledgehammer tool status
+        sledgehammerToolButton.textContent = 'SLEDGEHAMMER TOOL'; // Reset button text
+        document.getElementById('assetThumbnail').style.display = 'none'; // Hide the thumbnail
+    }
+});
+
+
+
+
+document.getElementById('sledgehammerToolButton').addEventListener('click', () => {
+    isSledgehammerActive = !isSledgehammerActive;
+    if (isSledgehammerActive) {
+        selectedAsset = null; // Reset the selected asset when sledgehammer is activated
+        document.querySelectorAll('.selection-item').forEach(el => {
+            el.style.backgroundColor = ''; // Reset background color
+        });
+        document.getElementById('assetThumbnail').style.display = 'none'; // Hide the thumbnail
+    }
+    document.getElementById('sledgehammerToolButton').textContent = isSledgehammerActive ? 'SLEDGEHAMMER: ON' : 'SLEDGEHAMMER: OFF';
+    draw(); // Redraw to reflect changes
+});
 
 // Modify the radio click event listener to show/hide the skip button
 radio.addEventListener('click', () => {
@@ -152,6 +222,39 @@ radio.addEventListener('click', () => {
     }
     radio.classList.toggle('active'); // Toggle the active class
 });
+
+//RADIO CLICK SOUND
+let isFirstClick = true;
+
+function playOpeningSound() {
+    const openingSound = document.getElementById('openingSound');
+    openingSound.play();
+}
+
+function playClickSound() {
+    const clickSound = document.getElementById('clickSound');
+    clickSound.play();
+}
+
+function handleRadioClick() {
+    if (isFirstClick) {
+        playOpeningSound();
+        isFirstClick = false; // Set to false after the first click
+    } else {
+        playClickSound();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const radio = document.getElementById('radio');
+    const skipButton = document.getElementById('skipButton');
+
+    radio.addEventListener('click', handleRadioClick);
+    skipButton.addEventListener('click', playClickSound); // Normal click sound for the skip button
+});
+
+
+
 
 
 document.getElementById('skipButton').addEventListener('click', () => {
@@ -189,8 +292,6 @@ audioPlayer.addEventListener('pause', () => {
     }
 });
 
-
-
 //END OF MUSIC APP
 
 
@@ -207,24 +308,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
     resetCinematicElements();
 
     // Toggle button event listener
-    document.getElementById('toggleButton').addEventListener('click', () => {
-        useSVG = !useSVG; // Toggle the image type
-        const toggleButton = document.getElementById('toggleButton');
-        if (useSVG) {
-            document.body.style.backgroundColor = '#e4d6a7';
-            addSVGs();
-            toggleGenerateButton(true); // Disable the generate button
-            showCinematicBars(); // Show the cinematic bars
-            toggleButton.textContent = 'SWITCH BACK'; // Change button text
-        } else {
-            document.body.style.backgroundColor = '';
-            removeSVGs();
-            toggleGenerateButton(false); // Enable the generate button
-            hideCinematicBars(); // Hide the cinematic bars
-            toggleButton.textContent = 'DRAMATIZE'; // Change button text back
-        }
-        generateWasteland(); // Re-generate the wasteland to apply the new image type
-    });
+document.getElementById('toggleButton').addEventListener('click', () => {
+    const editorModeButton = document.getElementById('editorModeButton');
+    useSVG = !useSVG; // Toggle the image type
+    const toggleButton = document.getElementById('toggleButton');
+
+    if (useSVG) {
+        document.body.style.backgroundColor = '#e4d6a7';
+        addSVGs();
+        toggleGenerateButton(true); // Disable the generate button
+        showCinematicBars(); // Show the cinematic bars
+        toggleButton.textContent = 'SWITCH BACK'; // Change button text
+        editorModeButton.style.display = 'none'; // Hide the editor mode button
+    } else {
+        document.body.style.backgroundColor = '';
+        removeSVGs();
+        toggleGenerateButton(false); // Enable the generate button
+        hideCinematicBars(); // Hide the cinematic bars
+        toggleButton.textContent = 'DRAMATIZE'; // Change button text back
+        editorModeButton.style.display = 'block'; // Show the editor mode button
+    }
+    generateWasteland(); // Re-generate the wasteland to apply the new image type
+});
+    
 });
 
 function resetCinematicElements() {
@@ -393,8 +499,12 @@ function setup() {
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
-    generateWasteland(); // Re-generate the wasteland to fit the new size
+    if (isEditorMode) {
+        draw(); // Re-draw the canvas to fit the new size
+    }
 }
+
+
 
 const loadingMessages = [
     'NUKING THE CITY',
@@ -425,6 +535,94 @@ function hideLoadingScreen() {
         document.body.removeChild(loadingScreen);
     }
 }
+
+function removeAssetAt(row, col) {
+    if (row >= 0 && row < gridRows && col >= 0 && col < gridCols) {
+        let asset = grid[row][col];
+        if (asset) {
+            // Remove all parts of the asset if it's a multi-tile asset
+            for (let r = 0; r < gridRows; r++) {
+                for (let c = 0; c < gridCols; c++) {
+                    if (grid[r][c] && grid[r][c].type === asset.type && grid[r][c].svg === asset.svg) {
+                        grid[r][c] = null;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+function drawSquareGrid() {
+    stroke(200); // Light gray color for grid lines
+    for (let row = 0; row < height; row += squareTileSize) {
+        line(0, row, width, row); // Horizontal lines
+    }
+    for (let col = 0; col < width; col += squareTileSize) {
+        line(col, 0, col, height); // Vertical lines
+    }
+}
+
+function isMouseInSelectionWindow() {
+    const selectionWindow = document.getElementById('selectionWindow');
+    const rect = selectionWindow.getBoundingClientRect();
+    return (
+        mouseX >= rect.left &&
+        mouseX <= rect.right &&
+        mouseY >= rect.top &&
+        mouseY <= rect.bottom
+    );
+}
+
+
+function mapIsometricToSquareGrid(row, col) {
+    let x = col * squareTileSize;
+    let y = row * squareTileSize;
+    return { x, y };
+}
+
+function showWarningMessage() {
+    const warningMessage = document.getElementById('warningMessage');
+    warningMessage.style.display = 'block';
+    setTimeout(() => {
+        warningMessage.style.display = 'none';
+    }, 2000); // Hide after 2 seconds
+}
+
+function playClickSound() {
+    const clickSound = document.getElementById('clickSound');
+    clickSound.play();
+}
+
+function handleMouseClick() {
+    if (isMouseInSelectionWindow()) {
+        return; // Do nothing if the mouse is in the selection window
+    }
+
+    if (isEditorMode && !isSledgehammerActive && selectedAsset) {
+        let col = Math.floor(mouseX / squareTileSize);
+        let row = Math.floor(mouseY / squareTileSize);
+        if (!getAssetAt(row, col)) { // Check if the cell is empty
+            placeAsset(selectedAsset, row, col); // Place the selected asset
+            draw(); // Redraw to reflect changes
+        }
+    } else if (isEditorMode && isSledgehammerActive) {
+        let col = Math.floor(mouseX / squareTileSize);
+        let row = Math.floor(mouseY / squareTileSize);
+        let asset = getAssetAt(row, col);
+        if (asset && !asset.part) {
+            console.log(`Removing asset at row: ${row}, col: ${col}`);
+            removeAssetAt(row, col);
+            draw(); // Redraw to reflect changes
+        } else if (!asset) {
+            // Show warning message if trying to place an asset with the sledgehammer tool active
+            showWarningMessage();
+        }
+    }
+}
+
+document.addEventListener('click', handleMouseClick);
+
 
 function generateWasteland() {
     showLoadingScreen();
@@ -612,10 +810,6 @@ function canPlaceAsset(asset, row, col) {
     return true;
 }
 
-
-
-
-
 function placeAsset(asset, startRow, startCol) {
     for (let row = startRow; row < startRow + asset.size; row++) {
         for (let col = startCol; col < startCol + asset.size; col++) {
@@ -627,17 +821,112 @@ function placeAsset(asset, startRow, startCol) {
     grid[startRow][startCol] = { ...asset, part: false };
 }
 
+
+
 function draw() {
     clear();
-    if (isMobile) {
-        translate(mobileGridOffsetX, mobileGridOffsetY); // Apply custom grid position for mobile
-        scale(0.8); // Scale down for mobile view
-        translate(width / 4, height / 4); // Adjust translation to center the scaled-down content
+
+    if (isEditorMode) {
+        drawSquareGrid(); // Draw the square grid
+        drawAssetsInSquareGrid(); // Draw the assets in the square grid with blue highlighting
+        highlightHoveredGridCell(); // Highlight the hovered grid cell
     } else {
-        translate(desktopGridOffsetX, desktopGridOffsetY); // Apply custom grid position for desktop
+        if (isMobile) {
+            translate(mobileGridOffsetX, mobileGridOffsetY); // Apply custom grid position for mobile
+            scale(0.8); // Scale down for mobile view
+            translate(width / 4, height / 4); // Adjust translation to center the scaled-down content
+        } else {
+            translate(desktopGridOffsetX, desktopGridOffsetY); // Apply custom grid position for desktop
+        }
+        drawMainCanvas(); // Draw the main canvas with assets in the isometric grid
     }
-    drawMainCanvas();
-    drawGrid(); // Draw the grid lines on top of the assets
+}
+
+function drawAssetsInSquareGrid() {
+    for (let row = 0; row < gridRows; row++) {
+        for (let col = 0; col < gridCols; col++) {
+            let asset = getAssetAt(row, col);
+            if (asset && !asset.part) {
+                let x = col * squareTileSize;
+                let y = row * squareTileSize;
+                let img = getAssetImage(asset);
+                let drawSize = squareTileSize * asset.sizePng; // Adjust size to fit square grid
+
+                // Highlight the grid cell in blue if the sledgehammer tool is active
+                if (isSledgehammerActive) {
+                    fill(0, 0, 255, 100); // Blue color with some transparency
+                    noStroke();
+                    rect(x, y, squareTileSize, squareTileSize);
+                }
+
+                // Ensure assets are within the visible area
+                if (x + drawSize > 0 && y + drawSize > 0 && x < width && y < height) {
+                    image(img, x, y, drawSize, drawSize);
+                }
+            }
+        }
+    }
+}
+
+
+function createAssetThumbnail() {
+    const thumbnail = document.createElement('img');
+    thumbnail.id = 'assetThumbnail';
+    thumbnail.style.position = 'absolute';
+    thumbnail.style.pointerEvents = 'none'; // Prevent interaction with the thumbnail
+    thumbnail.style.width = '40px'; // Adjust the size as needed
+    thumbnail.style.height = 'auto';
+    thumbnail.style.display = 'none'; // Hide it initially
+    document.body.appendChild(thumbnail);
+}
+
+function updateAssetThumbnail(e) {
+    const thumbnail = document.getElementById('assetThumbnail');
+    if (selectedAsset) {
+        thumbnail.src = selectedAsset.png.canvas.toDataURL(); // Update the thumbnail image
+        thumbnail.style.left = `${e.pageX + 10}px`; // Position the thumbnail
+        thumbnail.style.top = `${e.pageY + 10}px`;
+        thumbnail.style.display = 'block'; // Show the thumbnail
+    } else {
+        thumbnail.style.display = 'none'; // Hide the thumbnail if no asset is selected
+    }
+}
+
+document.addEventListener('mousemove', updateAssetThumbnail);
+createAssetThumbnail();
+
+function populateSelectionWindow() {
+    const selectionContent = document.getElementById('selectionContent');
+    selectionContent.innerHTML = ''; // Clear existing content
+
+    assets.forEach(asset => {
+        const item = document.createElement('div');
+        item.className = 'selection-item';
+
+        const img = document.createElement('img');
+        img.src = asset.png.canvas.toDataURL(); // Use the PNG for now
+        img.alt = asset.type;
+        img.style.width = '40px'; // Adjust the size as needed
+        img.style.height = 'auto';
+        img.style.marginRight = '10px';
+
+        const name = document.createElement('span');
+        name.textContent = asset.type;
+
+        item.appendChild(img);
+        item.appendChild(name);
+
+        item.addEventListener('click', () => {
+            selectedAsset = asset; // Track the selected asset
+            document.querySelectorAll('.selection-item').forEach(el => {
+                el.style.backgroundColor = ''; // Reset background color
+            });
+            item.style.backgroundColor = 'green'; // Highlight the selected asset
+            console.log(`Selected asset: ${asset.type}`);
+        });
+
+        selectionContent.appendChild(item);
+    });
 }
 
 function drawMainCanvas() {
@@ -696,10 +985,36 @@ function drawMainCanvas() {
     }
 }
 
+function highlightHoveredGridCell() {
+    if (!isEditorMode) {
+        return;
+    }
+
+    let col = Math.floor(mouseX / squareTileSize);
+    let row = Math.floor(mouseY / squareTileSize);
+
+    fill(255, 0, 0, 100); // Red color with some transparency
+    noStroke();
+    rect(col * squareTileSize, row * squareTileSize, squareTileSize, squareTileSize);
+}
+
+
+
+function getGridCellAtMousePosition() {
+    let mouseXOffset = mouseX - (isMobile ? mobileGridOffsetX : desktopGridOffsetX);
+    let mouseYOffset = mouseY - (isMobile ? mobileGridOffsetY : desktopGridOffsetY);
+
+    // Translate the screen coordinates to isometric grid coordinates
+    let col = Math.floor((mouseYOffset / tileHeight + mouseXOffset / tileWidth) / 2);
+    let row = Math.floor((mouseYOffset / tileHeight - mouseXOffset / tileWidth) / 2);
+
+    return { row, col };
+}
+
 
 
 function drawGrid() {
-    stroke(200, 0); // Light gray color for grid lines
+    stroke(200, 150); // Light gray color for grid lines
     for (let row = 0; row <= gridRows; row++) {
         for (let col = 0; col <= gridCols; col++) {
             let isoX = (col - row) * (tileWidth / 2);
@@ -720,6 +1035,7 @@ function getAssetAt(row, col) {
     }
     return grid[row][col];
 }
+
 
 function addSVGs() {
     for (let asset of assets) {

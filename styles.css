@@ -42,14 +42,123 @@ html, body {
   }
 }
 
-/* Mobile-specific styles */
-.mobile #toggleButton {
+.selection-window {
   position: fixed;
-  top: 530px; /* Adjust position as needed */
-  right: 30px;
-  z-index: 1001; /* Ensure the button is above the bars */
-  transform: none; /* No initial off-screen transform */
+  top: 0;
+  left: 0;
+  width: 200px; /* Adjust the width as needed */
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  overflow-y: scroll;
+  display: none; /* Hidden by default */
+  z-index: 1010; /* Ensure it is on top of other elements */
+  padding: 10px;
+  box-sizing: border-box;
 }
+
+.selection-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selection-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.selection-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#assetThumbnail {
+  z-index: 1001; /* Ensure it is on top of other elements */
+}
+
+#sledgehammerToolButton {
+  background: #ffffff00;
+  backdrop-filter: blur(4px);
+  font-family: "veneer", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  padding: 0.6em 1em;
+  font-weight: 900;
+  font-size: 16px;
+  border: 3px solid black;
+  border-radius: 0.4em;
+  box-shadow: 0.1em 0.1em;
+  cursor: pointer;
+  position: absolute;
+  top: 200px; /* Adjust this position as needed */
+  right: 20px;
+  color: rgb(0, 0, 0); /* Ensure text color is set */
+  margin-right: 10px;
+}
+
+#sledgehammerToolButton:hover {
+  transform: translate(-0.05em, -0.05em);
+  box-shadow: 0.15em 0.15em;
+  color:red;
+
+}
+
+#sledgehammerToolButton:active {
+  transform: translate(0.05em, 0.05em);
+  box-shadow: 0.05em 0.05em;
+  color:red;
+}
+
+.warning-message {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: "veneer", sans-serif;
+  font-size: 16px;
+  z-index: 1003; /* Ensure it is on top of other elements */
+  display: none; /* Hidden by default */
+}
+
+
+#editorModeButton {
+  background: #000000;
+  font-family: "veneer", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  padding: 0.6em 1em;
+  font-weight: 900;
+  font-size: 16px;
+  border: 2px solid white;
+  border-radius: 0.4em;
+  box-shadow: 0.1em 0.1em;
+  cursor: pointer;
+  position: absolute;
+  top: 150px; /* Adjust this position as needed */
+  right: 20px;
+  color: white; /* Ensure text color is set */
+  margin-right: 10px;
+}
+
+#editorModeButton:hover {
+  transform: translate(-0.05em, -0.05em);
+  box-shadow: 0.15em 0.15em;
+}
+
+#editorModeButton:active {
+  transform: translate(0.05em, 0.05em);
+  box-shadow: 0.05em 0.05em;
+}
+
 
 .mobile .cinematic-bar {
   z-index: 1000; /* Bars below the button */
@@ -103,17 +212,16 @@ html, body {
 }
 
 #toggleButton {
+  position: absolute;
+  top: 80px; /* Adjust to move higher, keep a gap from generateButton */
+  right: 20px ;
   background: #ff5757;
   border-radius: 1000px;
+  z-index:1000;
 }
-
 #generateButton {
-  top: 20px;
-  right: 20px;
-}
-
-#toggleButton {
-  top: 85px; /* Adjust to prevent overlap with generate button */
+  position: absolute;
+  top: 20px; /* Adjust to move higher */
   right: 20px;
 }
 
@@ -146,44 +254,40 @@ html, body {
 
 #radio {
   position: fixed;
-  bottom: -20px; /* Adjust to slightly protrude from the bottom */
-  right: -20px;  /* Adjust to slightly protrude from the right */
-  width: 130px;  /* Initial size */
+  bottom: -20px; /* Adjust as needed */
+  right: -20px; /* Adjust as needed */
+  width: 130px; /* Initial size */
   height: auto;
   cursor: pointer;
   transition: bottom 0.3s ease, right 0.3s ease, transform 0.3s ease, width 0.3s ease;
   transform: rotate(-15deg); /* Initial rotation */
-  z-index:1001;
+  z-index: 1001;
 }
 
 #radio:hover {
-  bottom: -15px;
-  right: -15px;
+  bottom: -15px; /* Adjust as needed */
+  right: -15px; /* Adjust as needed */
   width: 135px; /* Enlarged size */
   transform: rotate(-10deg); /* Remove rotation when active */
 }
 
 #radio.active {
-  bottom: 10px;
-  right: 10px;
+  bottom: 30px; /* Adjust as needed */
+  right: 30px; /* Adjust as needed */
   width: 150px; /* Enlarged size */
   transform: rotate(0deg); /* Remove rotation when active */
-  z-index:999;
-}
-
-#skipButton.visible {
-  display: block; /* Show when the class is added */
+  z-index: 999;
 }
 
 #skipButton {
-  position: fixed;
-  bottom: 105px !important; /* Adjust this value to move the button lower */
-  right: 15px !important; /* Adjust the horizontal position */
-  z-index: 1002;
+  position: absolute;
+  bottom: 130px; /* Position above the song name container */
+  right: 40px; /* Align with the radio */
+  z-index: 1000;
   font-family: helvetica;
   font-weight: lighter;
   font-style: normal;
-  padding: .6em 1em;
+  padding: 0.6em 1em;
   font-weight: 900;
   font-size: 10px;
   border: 1.8px solid #e4d6a7;
@@ -194,26 +298,32 @@ html, body {
   display: none; /* Initially hidden */
 }
 
+#skipButton.visible {
+  display: block; /* Show when the class is added */
+}
+
 #skipButton:hover {
   background-color: #707968;
   color: white; /* Ensure text color is set */
   transition: 0.1s ease; /* Smooth transition */
   font-size: 11px;
-    padding: .6em 1em;
+  padding: 0.6em 1em;
 }
 
 /* Container for song name */
-.songNameContainer {
+
+#songNameContainer {
   position: fixed;
-  bottom: 20px; /* Adjust as needed */
-  right: -500px; /* Start off-screen */
+  margin-right:20px;
+  bottom:33px; /* Position above the radio */
+  right: 20px; /* Align with the radio */
   background-color: rgba(0, 0, 0, 0.7);
   color: #fff;
   padding: 5px 20px;
   border-radius: 5px;
-  z-index: 1002;
+  z-index: 1000;
   font-family: "veneer", sans-serif; /* Customizable font */
-  font-size: 16px; /* Customizable font size */
+  font-size: 12px; /* Customizable font size */
   transition: right 0.5s ease; /* Smooth transition */
 }
 
@@ -247,18 +357,49 @@ html, body {
   animation: slideOutRight 0.5s forwards;
 }
 
+#editorModeButton {
+  position: static;
+  margin: 10px;
+}
+
+#sledgehammerToolButton {
+  position: static;
+  margin: 10px;
+}
+
+
+/* MOBILE START */
+
 
 /* Mobile optimization */
 @media (max-width: 600px) {
+
+    /* Container for song name */
+#songNameContainer {
+  font-size: 12px; /* Customizable font size */
+  position: absolute;
+  bottom:1.5px;
+  right:0px;
+}
+
   #generateButton, #toggleButton {
     padding: 0.4em 0.8em;
     font-size: 18px;
+    right: 10px;
   }
+  #generateButton{
+    top: 590px; /* Adjust to appropriate mobile position */
+  }
+  #toggleButton{
+    top: 540px; /* Adjust to appropriate mobile position */
+    right:10px;
+  }
+
   #skipButton {
-    bottom: 90px !important; /* Adjust this value to move the button lower */
-    right: 320px !important; /* Adjust the horizontal position */
+    bottom: 100px; /* Adjust this value to move the button lower */
+    right: 320px; /* Adjust the horizontal position */
     font-size: 9px; /* Customizable font size */
-    z-index: 998;
+    z-index: 1000;
   }
 
   #skipButton:hover {
@@ -278,36 +419,21 @@ html, body {
       right: 0%;
   }
 }
+#editorModeButton {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  margin: 0;
+}
 
-  /* Container for song name */
-  .songNameContainer {
-    font-size: 12px; /* Customizable font size */
-    position: fixed;
-    bottom: 95%; /* Adjust as needed */
-  }
+#sledgehammerToolButton {
+  position: fixed;
+  top: 60px; /* Create a gap between the buttons */
+  right: 10px;
+  margin: 0;
+}
 
-  #generateButton {
-    top: 590px;
-    right: 20px;
-  }
-
-  #toggleButton {
-    top: 540px;
-    right: 30px;
-    z-index: 1001;
-  }
-
-  #loadingScreen {
-    text-align: center;
-    font-size: calc(6vw + 6vh); /* Adjust the scaling factor as needed */
-    background: rgba(0, 0, 0, 0.80);
-  }
-
-  .cinematic-bar {
-    z-index: 1000; /* Bars below the button */
-  }
-
-  #radio {
+ #radio {
     bottom: -20px; /* Adjust to slightly protrude from the bottom */
     left: -20px;  /* Adjust to slightly protrude from the right */
     width: 110px; /* Enlarged size */
@@ -328,4 +454,33 @@ html, body {
     width:110px; /* Enlarged size */
     transform: rotate(0deg); /* Remove rotation when active */
   }
+
 }
+
+/* MOBILE ENDS HERE */
+
+
+/* Styles for desktop when editor mode is active */
+.editor-mode-active #editorModeButton {
+position: fixed;
+top: 10px;
+right: 10px;
+margin: 0;
+}
+
+.editor-mode-active #sledgehammerToolButton {
+position: fixed;
+top: 60px; /* Create a gap between the buttons */
+right: 10px;
+margin: 0;
+}
+
+  #loadingScreen {
+    text-align: center;
+    font-size: calc(6vw + 6vh); /* Adjust the scaling factor as needed */
+    background: rgba(0, 0, 0, 0.80);
+  }
+
+  .cinematic-bar {
+    z-index: 1000; /* Bars below the button */
+  }
