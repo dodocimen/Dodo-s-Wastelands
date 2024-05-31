@@ -910,11 +910,7 @@ function populateSelectionWindow() {
         img.style.height = 'auto';
         img.style.marginRight = '10px';
 
-        const name = document.createElement('span');
-        name.textContent = asset.type;
-
         item.appendChild(img);
-        item.appendChild(name);
 
         item.addEventListener('click', () => {
             selectedAsset = asset; // Track the selected asset
@@ -928,6 +924,7 @@ function populateSelectionWindow() {
         selectionContent.appendChild(item);
     });
 }
+
 
 function drawMainCanvas() {
     clear();
