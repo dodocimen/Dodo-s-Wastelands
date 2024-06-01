@@ -269,6 +269,47 @@ html, body {
   z-index: 1001;
 }
 
+#musicNotesContainer {
+  position: fixed;
+  bottom: 180px; /* Adjust to position above the radio */
+  right: 50px; /* Adjust to position near the radio */
+  pointer-events: none; /* Allow clicks to pass through */
+  display: none; /* Initially hidden */
+  z-index: 1002; /* Ensure it is on top of other elements */
+}
+
+.music-note {
+  position: absolute;
+  font-size: 24px;
+  color: #000; /* Adjust color as needed */
+  opacity: 0;
+  animation: float 3s infinite;
+}
+
+.music-note:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.music-note:nth-child(2) {
+  animation-delay: 1s;
+}
+
+@keyframes float {
+  0% {
+      transform: translateY(0) translateX(0);
+      opacity: 1;
+  }
+  50% {
+      transform: translateY(-30px) translateX(-10px);
+      opacity: 0.5;
+  }
+  100% {
+      transform: translateY(-60px) translateX(-20px);
+      opacity: 0;
+  }
+}
+
+
 #radio {
   position: fixed;
   bottom: -20px; /* Adjust as needed */
@@ -413,8 +454,8 @@ html, body {
   }
 
   #skipButton {
-    bottom: 100px; /* Adjust this value to move the button lower */
-    right: 320px; /* Adjust the horizontal position */
+    bottom: 85px; /* Adjust this value to move the button lower */
+    right: 280px; /* Adjust the horizontal position */
     font-size: 9px; /* Customizable font size */
     z-index: 1000;
   }
@@ -450,6 +491,12 @@ html, body {
   margin: 0;
 }
 
+#musicNotesContainer {
+  position: fixed;
+  bottom: 180px; /* Adjust to position above the radio */
+  left: 40px; /* Adjust to position near the radio */
+  z-index: 1002; /* Ensure it is on top of other elements */
+}
  #radio {
     bottom: -20px; /* Adjust to slightly protrude from the bottom */
     left: -20px;  /* Adjust to slightly protrude from the right */

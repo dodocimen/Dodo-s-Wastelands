@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         { src: 'assets/music/tickethome.mp3', name: 'Ticket Home - The Bones of J.R. Jones' },
         { src: 'assets/music/prettybug.mp3', name: 'Pretty Bug - Allan Rayman' },
         { src: 'assets/music/herewego.mp3', name: 'Here We Go - Norman' },
+        { src: 'assets/music/onebyone.mp3', name: 'One By One - The Blue Stones' },
         { src: 'assets/music/feelingyou.mp3', name: 'Feeling You - Harrison Storm' },
         { src: 'assets/music/hammersnnails.mp3', name: 'Hammers and Nails - The Bones of J.R. Jones' },
         { src: 'assets/music/brotherrunfast.mp3', name: 'Brother Run Fast - KALEO' },
@@ -224,35 +225,52 @@ radio.addEventListener('click', () => {
 });
 
 //RADIO CLICK SOUND
-let isFirstClick = true;
-
-function playOpeningSound() {
-    const openingSound = document.getElementById('openingSound');
-    openingSound.play();
-}
-
-function playClickSound() {
-    const clickSound = document.getElementById('clickSound');
-    clickSound.play();
-}
-
-function handleRadioClick() {
-    if (isFirstClick) {
-        playOpeningSound();
-        isFirstClick = false; // Set to false after the first click
-    } else {
-        playClickSound();
-    }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const radio = document.getElementById('radio');
     const skipButton = document.getElementById('skipButton');
+    const musicNotesContainer = document.getElementById('musicNotesContainer');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    let isFirstClick = true;
+
+    function playOpeningSound() {
+        const openingSound = document.getElementById('openingSound');
+        openingSound.play();
+    }
+
+    function playClickSound() {
+        const clickSound = document.getElementById('clickSound');
+        clickSound.play();
+    }
+
+    function handleRadioClick() {
+        if (isFirstClick) {
+            playOpeningSound();
+            isFirstClick = false; // Set to false after the first click
+        } else {
+            playClickSound();
+        }
+
+        if (audioPlayer.paused) {
+            musicNotesContainer.style.display = 'none';
+        } else {
+            musicNotesContainer.style.display = 'block';
+        }
+    }
+
+    function handleAudioPlay() {
+        musicNotesContainer.style.display = 'block';
+    }
+
+    function handleAudioPause() {
+        musicNotesContainer.style.display = 'none';
+    }
 
     radio.addEventListener('click', handleRadioClick);
     skipButton.addEventListener('click', playClickSound); // Normal click sound for the skip button
+    audioPlayer.addEventListener('play', handleAudioPlay);
+    audioPlayer.addEventListener('pause', handleAudioPause);
 });
-
 
 
 
