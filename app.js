@@ -488,7 +488,7 @@ function initializeAssets() {
         { type: 'streetLamp', png: loadImage('assets/lights/light-building2.png'), svg: 'assets/lights/light-building2.svg', svgElement: null, sizePng: .8, sizeSvg: 2, edges: { top: 'road', right: 'road', bottom: 'road', left: 'road' }, rarity: 5 },
 
         // Dead Zone Assets
-        { type: 'crater', png: loadImage('assets/deadzone/largecrater.png'), svg: 'assets/deadzone/largecrater.svg', svgElement: null, sizePng: 8, sizeSvg: 12.5, edges: { top: 'deadZone', right: 'deadZone', bottom: 'deadZone', left: 'deadZone' }, rarity: 8 },
+        { type: 'crater', png: loadImage('assets/deadzone/largecrater.png'), svg: 'assets/deadzone/largecrater.svg', svgElement: null, sizePng: 8, sizeSvg: 12.3, edges: { top: 'deadZone', right: 'deadZone', bottom: 'deadZone', left: 'deadZone' }, rarity: 8 },
 
         // Downtown Zone Assets
         { type: 'condoComplex', png: loadImage('assets/downtown/largebuildingscombination.png'), svg: 'assets/downtown/largebuildingscombination.svg', svgElement: null, sizePng: 5, sizeSvg: 9, edges: { top: 'downtownZone', right: 'downtownZone', bottom: 'downtownZone', left: 'downtownZone' }, rarity: 8 },
